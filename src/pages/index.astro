@@ -1,0 +1,90 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE, TOOLS, GUIDES } from '../data/site';
+
+const title = 'Marvel Rivals Rank Tools – RR Estimator & Percentiles';
+const description =
+  'Free Marvel Rivals ranked tools: RR estimator for wins to your target rank, percentile calculator, an editable rank distribution table and a season reset planner.';
+
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE.brand,
+  url: Astro.site?.toString(),
+  description,
+};
+const orgLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: SITE.brand,
+  url: Astro.site?.toString(),
+  description: 'Unofficial fan-made ranked math for Marvel Rivals.',
+};
+---
+
+<Base title={title} description={description} schema={[websiteLd, orgLd]}>
+  <section class="hero">
+    <p class="kicker">Season data reviewed {SITE.lastVerified} // unofficial</p>
+    <h1>Stop arguing about rank. Start measuring it.</h1>
+    <p class="sub">
+      Wins to Diamond, your percentile versus the server, the reset damage in advance — Marvel Rivals ranked
+      math, free and instant, no sign-up.
+    </p>
+    <div class="speech">
+      No official rank distribution exists — so our table is <strong>editable</strong>, not pretended. Plug in
+      current tracker numbers and every percentile recomputes. <a href="/methodology/">How we stay honest →</a>
+    </div>
+  </section>
+
+  <section aria-labelledby="tools-h">
+    <h2 id="tools-h">The toolkit</h2>
+    <div class="cards">
+      {TOOLS.map((t) => (
+        <a class="card" href={t.href}>
+          <span class="ico">{t.ico}</span>
+          <h3>{t.name}</h3>
+          <p>{t.desc}</p>
+          <span class="tag">{t.tag}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="prose" aria-labelledby="chooser-h">
+    <h2 id="chooser-h">Which tool do I need?</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col">Your question</th><th scope="col">Use</th></tr></thead>
+        <tbody>
+          <tr><td>"How many wins to Diamond from Gold II?"</td><td><a href="/rr-estimator/">RR Estimator</a></td></tr>
+          <tr><td>"Am I actually top 10%?"</td><td><a href="/rank-percentile/">Rank Percentile</a></td></tr>
+          <tr><td>"What % of players is Grandmaster?"</td><td><a href="/rank-distribution/">Rank Distribution</a></td></tr>
+          <tr><td>"Where does the reset drop me next season?"</td><td><a href="/reset-planner/">Reset Planner</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="prose" aria-labelledby="why-h">
+    <h2 id="why-h">Why RIVALS RANK</h2>
+    <ul>
+      <li><strong>No ads, no account, no credential requests.</strong> A ranked calculator never needs your login — treat any that asks with suspicion.</li>
+      <li><strong>Editable data beats fake data.</strong> Distribution shares are inputs; the math is exact. See the <a href="/methodology/">methodology</a>.</li>
+      <li><strong>Built for resets.</strong> Season data reviews keep the tools useful every ~2 months.</li>
+    </ul>
+  </section>
+
+  <section class="prose" aria-labelledby="learn-h">
+    <h2 id="learn-h">Learn the ladder</h2>
+    <div class="cards">
+      {GUIDES.map((g) => (
+        <a class="card" href={g.href}>
+          <span class="ico">{g.ico}</span>
+          <h3>{g.name}</h3>
+          <p>{g.desc}</p>
+          <span class="tag">Guide</span>
+        </a>
+      ))}
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,62 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SITE } from '../../data/site';
+
+const title = 'How RR Works in Marvel Rivals – Ranked Points Guide';
+const description =
+  'How RR works in Marvel Rivals: gains and losses by division, the 100-RR division climb, performance effects, and how to measure your own values.';
+const updated = SITE.lastVerified;
+---
+
+<Base
+  title={title}
+  description={description}
+  crumbs={[{ name: 'Guides' }, { name: 'How RR Works' }]}
+  schema={[{
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: 'How RR works in Marvel Rivals',
+    datePublished: '2026-10-08',
+    dateModified: updated,
+    author: { '@type': 'Organization', name: SITE.brand },
+  }]}
+>
+  <div class="page-head">
+    <h1>How RR works</h1>
+    <div class="h1-bar"></div>
+    <p class="lede">
+      Rank Racer points are Marvel Rivals' climbing currency: win to gain, lose to bleed, climb 100 to jump a
+      division. Here's the community-documented shape of the system — and what nobody outside NetEase knows.
+    </p>
+    <div class="microline"><span>By {SITE.brand}</span><span>Updated {updated}</span></div>
+  </div>
+
+  <section class="prose">
+    <h2>Quick answer</h2>
+    <p>
+      Each division holds 100 RR. Wins add RR, losses subtract it, with amounts that vary by rank and (community reports suggest) performance. Mid-rank swings near +25/−25 are typical [VERIFY — the official formula is unpublished]. The practical move: measure your own values over two sessions and put them in the <a href="/rr-estimator/">RR estimator</a>.
+    </p>
+
+    <h2>The division ladder</h2>
+    <ul>
+      <li>Three divisions per tier (I is the top), 100 RR each — a tier climb is a ~300-RR project.</li>
+      <li>Loss protection and demotion shields exist at division boundaries; their exact behavior has changed between seasons [VERIFY].</li>
+      <li>Top tiers (Eternity, One Above All) drop divisions-based play for leaderboard position.</li>
+    </ul>
+
+    <h2>Measuring your own RR (do this once)</h2>
+    <ol class="steps">
+      <li>Play 10 games in one division; record RR before and after each game.</li>
+      <li>Average the wins → that's your <strong>RR per win</strong>; same for losses.</li>
+      <li>Compute win rate over the same 10 games from your profile history.</li>
+      <li>Enter all three in the <a href="/rr-estimator/">RR estimator</a> — now every projection is personal, not folklore.</li>
+    </ol>
+
+    <h2>What we don't claim to know</h2>
+    <ul>
+      <li>Exact performance-modifier formulas, if any — community evidence is mixed and patch-dependent.</li>
+      <li>Whether hidden MMR influences RR swings at the margins.</li>
+    </ul>
+    <p class="note">If a source claims certainty on either, ask for the datamine. Everything on this page is labeled with its confidence level — <a href="/methodology/">methodology</a>.</p>
+  </section>
+</Base>

@@ -1,0 +1,122 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../data/site';
+
+const title = 'Marvel Rivals Season Reset Planner – Where You Land';
+const description =
+  'Free Marvel Rivals reset planner: model the season soft reset with an adjustable drop rule, see your projected starting rank, and count the wins to recover it.';
+
+const faqs = [
+  {
+    q: 'What is the current reset rule?',
+    a: 'Season resets apply a soft drop (partway back down the ladder) rather than a full wipe, but the exact rule has varied by season [VERIFY against the current season\'s patch notes — it is an input here for that reason].',
+  },
+  {
+    q: 'Why plan for the reset at all?',
+    a: 'Because placement anxiety is just math you haven\'t done: knowing you land in Platinum III with a 12-win path back to Diamond turns a scary week into a checklist.',
+  },
+  {
+    q: 'Does my RR carry within the new season?',
+    a: 'After placement/soft-drop, normal RR gains resume — run the <a href="/rr-estimator/">RR estimator</a> from your projected start for the climb count.',
+  },
+];
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+
+<Base title={title} description={description} crumbs={[{ name: 'Tools', href: '/tools/' }, { name: 'Reset Planner' }]} schema={[faqLd]}>
+  <div class="page-head">
+    <h1>Reset Planner</h1>
+    <div class="h1-bar"></div>
+    <p class="lede">
+      Season resets are less scary when you can see the landing spot. Model the soft drop with an adjustable
+      rule, then count the wins back to your badge.
+    </p>
+    <div class="microline"><span>Free</span><span>No sign-up</span><span>Runs in your browser</span></div>
+  </div>
+
+  <form class="tool panel accent" id="reset" autocomplete="off" onsubmit="return false">
+    <div class="fields">
+      <label class="field"><span>Your rank tier now</span>
+        <select id="tier">
+          <option>Bronze</option><option>Silver</option><option>Gold</option><option selected>Platinum</option>
+          <option>Diamond</option><option>Grandmaster</option><option>Celestial</option><option>Eternity</option><option>One Above All</option>
+        </select>
+      </label>
+      <label class="field"><span>Reset keeps</span><input id="keep" type="number" value="60" min="10" max="100" step="5" inputmode="numeric" /><small>% of your ladder position [VERIFY]</small></label>
+      <label class="field"><span>Tiers on ladder</span><input id="tiers" type="number" value="9" min="3" max="20" step="1" inputmode="numeric" /></label>
+      <label class="field"><span>RR per win</span><input id="w" type="number" value="25" min="1" step="1" inputmode="numeric" /></label>
+      <label class="field"><span>Wins to re-earn per tier</span><input id="ppt" type="number" value="8" min="1" step="1" inputmode="numeric" /><small>your typical</small></label>
+    </div>
+    <button class="btn" type="button" onclick="calcReset()">Project</button>
+  </form>
+
+  <div class="result" id="result" aria-live="polite"></div>
+
+  <section class="prose">
+    <h2>How it works</h2>
+    <pre class="formula">ladder position  = tierIndex ÷ (tiers − 1)     (0 = Bronze, 1 = top)
+kept position    = ladder position × keep%
+projected tier   = round(kept position × (tiers − 1))
+wins to recover  = tiers lost × wins per tier</pre>
+    <p>The "keep %" default is a community-style placeholder [VERIFY the current season's notes]. The planner's job is the shape of the answer: how far the drop is, and what it costs to undo. <a href="/methodology/">Methodology</a>.</p>
+
+    <h2>FAQ</h2>
+    {faqs.map((f) => (
+      <details><summary>{f.q}</summary><p>{f.a}</p></details>
+    ))}
+  </section>
+
+  <section class="prose">
+    <h2>Related tools and guides</h2>
+    <div class="cards">
+      <a class="card" href="/rr-estimator/"><span class="ico">🚀</span><h3>RR Estimator</h3><p>From projected start to target badge.</p><span class="tag">Flagship</span></a>
+      <a class="card" href="/guides/climbing-math/"><span class="ico">📙</span><h3>Climbing math</h3><p>Make the recovery phase faster.</p><span class="tag">Guide</span></a>
+      <a class="card" href="/rank-percentile/"><span class="ico">📊</span><h3>Rank Percentile</h3><p>Where the reset leaves you in the field.</p><span class="tag">Calculator</span></a>
+    </div>
+  </section>
+
+  <div class="trust">
+    <strong>Maintained by {SITE.brand}</strong> · Free, no-ads, no-account · Model: <a href="/methodology/">Methodology</a> ·
+    Found an error? <a href="/contact/">Report it</a>.
+  </div>
+</Base>
+
+<script>
+  const $ = (id: string) => document.getElementById(id) as HTMLInputElement | HTMLSelectElement;
+  const numv = (id: string, fb = 0) => { const v = parseFloat($(id).value); return Number.isFinite(v) ? v : fb; };
+  const fmt = (n: number, d = 0) => (Number.isFinite(n) ? new Intl.NumberFormat('en-US', { maximumFractionDigits: d }).format(n) : '—');
+
+  function calcReset() {
+    const tiers = Math.max(3, numv('tiers', 9));
+    const idx = Math.max(0, Math.min(tiers - 1, ($('tier') as HTMLSelectElement).selectedIndex));
+    const keep = Math.min(100, Math.max(10, numv('keep', 60))) / 100;
+    const w = numv('w', 25), ppt = Math.max(1, numv('ppt', 8));
+    const pos = idx / (tiers - 1);
+    const kept = pos * keep;
+    const newIdx = Math.round(kept * (tiers - 1));
+    const tiersLost = idx - newIdx;
+    const wins = tiersLost * ppt;
+    const el = document.getElementById('result')!;
+    const tiersList = Array.from(($('tier') as HTMLSelectElement).options).map((o) => o.text);
+    el.innerHTML = `
+      <div class="stats">
+        <div class="stat"><span class="k">Projected start tier</span><span class="v">${tiersList[newIdx]}</span></div>
+        <div class="stat"><span class="k">Tiers lost</span><span class="v red">${fmt(tiersLost)}</span></div>
+        <div class="stat"><span class="k">Wins back to ${tiersList[idx]}</span><span class="v">${fmt(wins)}</span></div>
+      </div>
+      <div class="rows">
+        <div class="row"><span>Ladder position kept</span><b>${fmt(keep * 100, 0)}%</b></div>
+        <div class="row"><span>~RR to recover</span><b>${fmt(wins * w)}</b></div>
+      </div>
+      <p class="note">Linear ladder model with editable keep% [VERIFY current season]. Take the projection into the <a href="/rr-estimator/">RR estimator</a> for the real climb count. <a href="/methodology/">Methodology</a>.</p>`;
+    (window as any).calcReset = calcReset;
+  }
+  (window as any).calcReset = calcReset;
+  document.getElementById('reset')?.addEventListener('input', calcReset);
+  calcReset();
+</script>

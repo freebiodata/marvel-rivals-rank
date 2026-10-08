@@ -1,0 +1,66 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SITE } from '../../data/site';
+
+const title = 'Marvel Rivals Ranks Explained – Bronze to One Above All';
+const description =
+  'Every Marvel Rivals rank explained: the Bronze-to-One Above All ladder, who you meet in each tier, and what it takes to move up — with percentile context.';
+const updated = SITE.lastVerified;
+---
+
+<Base
+  title={title}
+  description={description}
+  crumbs={[{ name: 'Guides' }, { name: 'Ranks Explained' }]}
+  schema={[{
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: 'Marvel Rivals ranks explained',
+    datePublished: '2026-10-08',
+    dateModified: updated,
+    author: { '@type': 'Organization', name: SITE.brand },
+  }]}
+>
+  <div class="page-head">
+    <h1>Ranks explained</h1>
+    <div class="h1-bar"></div>
+    <p class="lede">
+      Nine tiers, three divisions each, one leaderboard at the top. Here's the ladder with honest context —
+      who you meet, what the games feel like, and where the percentile lines sit.
+    </p>
+    <div class="microline"><span>By {SITE.brand}</span><span>Updated {updated}</span></div>
+  </div>
+
+  <section class="prose">
+    <h2>Quick answer</h2>
+    <p>
+      The ladder runs Bronze → Silver → Gold → Platinum → Diamond → Grandmaster → Celestial → Eternity → One
+      Above All, three divisions per tier. Check exactly where any tier sits in the population on the{' '}
+      <a href="/rank-percentile/">percentile calculator</a>.
+    </p>
+
+    <h2>The tiers, honestly</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Tier</th><th>The vibe</th><th>What moves you up</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Bronze–Silver</strong></td><td>Learning heroes; duels happen by accident</td><td>One comfortable role, two heroes</td></tr>
+          <tr><td><strong>Gold</strong></td><td>Team play appears; ults get coordinated</td><td>Listening to comms, not tilting</td></tr>
+          <tr><td><strong>Platinum</strong></td><td>The great filter — mechanics are fine, decisions aren't</td><td>Positioning and ult economy</td></tr>
+          <tr><td><strong>Diamond</strong></td><td>Everyone knows their job; mistakes get punished</td><td>Consistency, VOD reviews</td></tr>
+          <tr><td><strong>Grandmaster</strong></td><td>Draft matters; comfort picks get counter-picked</td><td>Hero pools + adaptability</td></tr>
+          <tr><td><strong>Celestial</strong></td><td>Serious stacks; every fight is contested</td><td>Playing schedules, not vibes</td></tr>
+          <tr><td><strong>Eternity / One Above All</strong></td><td>Leaderboard territory</td><td>Everything above, at volume</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Tier descriptions are community convention — the <a href="/rank-distribution/">distribution table</a> is where the population facts live.</p>
+
+    <h2>Moving between tiers</h2>
+    <p>
+      Every tier is a ~300-RR project (3 divisions × 100). The <a href="/rr-estimator/">RR estimator</a> turns
+      your win rate into a game count — usually the difference between tiers is two or three decisions per
+      match, repeated for a week.
+    </p>
+  </section>
+</Base>

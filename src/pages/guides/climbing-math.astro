@@ -1,0 +1,70 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SITE } from '../../data/site';
+
+const title = 'Climbing Math in Marvel Rivals – Win Rates & Games';
+const description =
+  'The math of climbing in Marvel Rivals: why 55% compounds, how many games each rank really takes, and the three levers that beat grinding more games.';
+const updated = SITE.lastVerified;
+---
+
+<Base
+  title={title}
+  description={description}
+  crumbs={[{ name: 'Guides' }, { name: 'Climbing Math' }]}
+  schema={[{
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: 'The climbing math of Marvel Rivals ranked',
+    datePublished: '2026-10-08',
+    dateModified: updated,
+    author: { '@type': 'Organization', name: SITE.brand },
+  }]}
+>
+  <div class="page-head">
+    <h1>Climbing math</h1>
+    <div class="h1-bar"></div>
+    <p class="lede">
+      Rank is an arithmetic problem wearing a superhero costume. Win rate decides your speed, losses are the
+      tax, and three small levers beat a hundred extra games.
+    </p>
+    <div class="microline"><span>By {SITE.brand}</span><span>Updated {updated}</span></div>
+  </div>
+
+  <section class="prose">
+    <h2>Quick answer</h2>
+    <p>
+      Expected RR per game = winRate × RR/win − (1 − winRate) × RR/loss. At +25/−25 with 50%, that's zero —
+      matchmaking purgatory. At 55%, it's +2.5 per game: slow but certain. At 60%, +5 — double the speed of
+      55% for five extra wins in a hundred. Run your own numbers in the <a href="/rr-estimator/">RR estimator</a>.
+    </p>
+
+    <h2>Why small edges compound</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Win rate</th><th>Net RR/game (+25/−25)</th><th>Games per tier (~300 RR)</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">50%</td><td class="mono">0</td><td>∞ (purgatory)</td></tr>
+          <tr><td class="mono">53%</td><td class="mono">+1.5</td><td class="mono">200</td></tr>
+          <tr><td class="mono">55%</td><td class="mono">+2.5</td><td class="mono">120</td></tr>
+          <tr><td class="mono">60%</td><td class="mono">+5</td><td class="mono">60</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Assumes symmetric +25/−25 swings [VERIFY with your own measured values].</p>
+
+    <h2>The three levers, ranked by ROI</h2>
+    <ol class="steps">
+      <li><strong>Stop the free losses:</strong> queuing tilted, first-game-of-the-day yolo queues, and off-role instalocks cost more RR than any aim gap.</li>
+      <li><strong>Fix the repeatable mistake:</strong> one VOD-reviewed positioning error fixed is worth +2–3% win rate for most players — the biggest single lever in the table above.</li>
+      <li><strong>Play your queue smart:</strong> duo with one reliable partner or go solo consistently; alternating changes your effective win rate unpredictably.</li>
+    </ol>
+
+    <h2>What grinding harder does — and doesn't do</h2>
+    <p>
+      Volume wins when your win rate is positive: at +2.5/game, 120 games per tier is a finished project, not a
+      life sentence. But volume at 49% is a donation program. The estimator's net-RR line tells you which one
+      you're in — believe it.
+    </p>
+  </section>
+</Base>

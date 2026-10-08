@@ -1,0 +1,136 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE, LADDER } from '../data/site';
+
+const title = 'Marvel Rivals Rank Percentile – Top X% Calculator';
+const description =
+  'Free Marvel Rivals rank percentile calculator: pick your tier and division to see the share of players at or above you, based on an editable season distribution table.';
+
+const faqs = [
+  {
+    q: 'Why is the distribution table editable?',
+    a: 'Because no official distribution exists, and third-party trackers publish conflicting numbers that drift each season. You can paste the current season\'s shares into the table — the percentile math recomputes exactly. Pretending otherwise would just be wrong with confidence.',
+  },
+  {
+    q: 'What percentile is Grandmaster?',
+    a: 'Under typical community-tracked distributions, Grandmaster lands around the top 5–10% — but the honest answer changes every season. Enter the current table on the <a href="/rank-distribution/">distribution page</a> and trust that number instead of year-old forum posts.',
+  },
+  {
+    q: 'Does division matter for percentile?',
+    a: 'We interpolate: your division (I is highest) positions you within your tier\'s share. It\'s an estimate — real curves are lumpy — but far better than treating a whole tier as one point.',
+  },
+];
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+
+<Base title={title} description={description} crumbs={[{ name: 'Tools', href: '/tools/' }, { name: 'Rank Percentile' }]} schema={[faqLd]}>
+  <div class="page-head">
+    <h1>Rank Percentile</h1>
+    <div class="h1-bar"></div>
+    <p class="lede">
+      "Top X% of players" — computed from a distribution table you control, because no official one exists.
+      Editable, honest, instant.
+    </p>
+    <div class="microline"><span>Free</span><span>No sign-up</span><span>Table editable per season</span></div>
+  </div>
+
+  <form class="tool panel accent" id="pct" autocomplete="off" onsubmit="return false">
+    <div class="fields">
+      <label class="field"><span>Your rank tier</span>
+        <select id="tier">
+          {LADDER.map((t, i) => <option value={i} selected={i === 3}>{t.rank}</option>)}
+        </select>
+      </label>
+      <label class="field"><span>Division</span>
+        <select id="div">
+          <option value="1">Division I (top of tier)</option>
+          <option value="2" selected>Division II</option>
+          <option value="3">Division III (bottom of tier)</option>
+        </select>
+      </label>
+    </div>
+    <button class="btn" type="button" onclick="calcPct()">Place me</button>
+  </form>
+
+  <div class="result" id="result" aria-live="polite"></div>
+
+  <section class="prose">
+    <h2>Current table (edit on the <a href="/rank-distribution/">distribution page</a>)</h2>
+    <p class="note">Community-placeholder shares [VERIFY each season] — this page reads the same localStorage table.</p>
+    <div id="tbl"></div>
+
+    <h2>FAQ</h2>
+    {faqs.map((f) => (
+      <details><summary>{f.q}</summary><p>{f.a}</p></details>
+    ))}
+  </section>
+
+  <section class="prose">
+    <h2>Related tools and guides</h2>
+    <div class="cards">
+      <a class="card" href="/rank-distribution/"><span class="ico">🗺️</span><h3>Rank Distribution</h3><p>Edit the season table here.</p><span class="tag">Data</span></a>
+      <a class="card" href="/rr-estimator/"><span class="ico">🚀</span><h3>RR Estimator</h3><p>Climb to the next tier — counted in wins.</p><span class="tag">Flagship</span></a>
+      <a class="card" href="/guides/ranks-explained/"><span class="ico">📗</span><h3>Ranks explained</h3><p>Who lives in each tier.</p><span class="tag">Guide</span></a>
+    </div>
+  </section>
+
+  <div class="trust">
+    <strong>Maintained by {SITE.brand}</strong> · Free, no-ads, no-account · Model: <a href="/methodology/">Methodology</a> ·
+    Found an error? <a href="/contact/">Report it</a>.
+  </div>
+</Base>
+
+<script>
+  const DEFAULTS = JSON.parse(document.getElementById('ladder').textContent);
+  const KEY = 'rivalsrank-dist-v1';
+  const $ = (id: string) => document.getElementById(id) as HTMLSelectElement;
+
+  function table(): { rank: string; share: number }[] {
+    try { return JSON.parse(localStorage.getItem(KEY) || 'null') || DEFAULTS; } catch { return DEFAULTS; }
+  }
+
+  function renderTable() {
+    const t = table();
+    document.getElementById('tbl')!.innerHTML = `
+      <div class="table-scroll"><table>
+        <thead><tr><th>Tier</th><th>Share of players [editable]</th></tr></thead>
+        <tbody>${t.map((r: any) => `<tr><td>${r.rank}</td><td class="mono">${r.share}%</td></tr>`).join('')}</tbody>
+      </table></div>`;
+    (window as any).renderTable = renderTable;
+  }
+
+  function calcPct() {
+    const idx = parseInt($('tier').value, 10);
+    const div = parseInt($('div').value, 10);
+    const t = table();
+    // share of players at or above: all higher tiers + your position within this tier
+    let above = 0;
+    for (let i = 0; i < idx; i++) above += t[i].share;
+    // within tier: division I ~ top third, II middle, III bottom
+    const inTier = t[idx].share;
+    const posInTier = div === 1 ? inTier * 0.28 : div === 2 ? inTier * 0.62 : inTier * 0.92;
+    const atOrAbove = above + posInTier;
+    const total = t.reduce((s: number, r: any) => s + r.share, 0);
+    const pct = (atOrAbove / total) * 100;
+    const el = document.getElementById('result')!;
+    el.innerHTML = `
+      <div class="stats">
+        <div class="stat"><span class="k">You are roughly</span><span class="v">Top ${pct < 1 ? pct.toFixed(1) : Math.round(pct)}%</span></div>
+        <div class="stat"><span class="k">Rank</span><span class="v blue">${t[idx].rank} ${['I','II','III'][div - 1]}</span></div>
+        <div class="stat"><span class="k">Players at/above</span><span class="v red">${pct.toFixed(1)}%</span></div>
+      </div>
+      <p class="note">Based on the editable season table — update it with current tracker data for honest numbers. Division position is interpolated. <a href="/methodology/">Methodology</a>.</p>`;
+    (window as any).calcPct = calcPct;
+  }
+
+  (window as any).calcPct = calcPct;
+  document.getElementById('pct')?.addEventListener('input', calcPct);
+  renderTable();
+  calcPct();
+</script>
+<script type="application/json" id="ladder" set:html={JSON.stringify(LADDER)} />
